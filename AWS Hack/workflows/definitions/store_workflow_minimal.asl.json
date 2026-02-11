@@ -1,0 +1,18 @@
+{
+  "Comment": "Minimal store workflow: trigger from API, then succeed (full logic can run in Lambda or external crew)",
+  "StartAt": "RecordTrigger",
+  "States": {
+    "RecordTrigger": {
+      "Type": "Pass",
+      "Parameters": {
+        "store_id.$": "$.store_id",
+        "trigger.$": "$.trigger",
+        "timestamp.$": "$$.State.EnteredTime"
+      },
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Succeed"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "Comment": "Store operations: reorder and notify workflow",
+  "StartAt": "CheckInventory",
+  "States": {
+    "CheckInventory": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${CheckInventoryLambdaArn}",
+        "Payload": {
+          "store_id.$": "$.store_id",
+          "trigger.$": "$.trigger"
+        }
+      },
+      "ResultPath": "$.checkResult",
+      "Next": "LowStockDecision"
+    },
+    "LowStockDecision": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.checkResult.Payload.low_stock_count",
+          "NumericGreaterThan": 0,
+          "Next": "CreateOrders"
+        }
+      ],
+      "Default": "NotifyComplete"
+    },
+    "CreateOrders": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${CreateOrdersLambdaArn}",
+        "Payload": {
+          "store_id.$": "$.store_id",
+          "items.$": "$.checkResult.Payload.low_stock_items"
+        }
+      },
+      "ResultPath": "$.ordersResult",
+      "Next": "NotifyStaff"
+    },
+    "NotifyStaff": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${AlertTopicArn}",
+        "Message.$": "States.Format('Store {}: {} low-stock items; orders created.', $.store_id, $.checkResult.Payload.low_stock_count)",
+        "Subject": "Store reorder alert"
+      },
+      "Next": "NotifyComplete"
+    },
+    "NotifyComplete": {
+      "Type": "Succeed"
+    }
+  }
+}
