@@ -1,4 +1,4 @@
-import type { InventoryItem, EquipmentItem, Order, Customer } from "./types"
+import type { InventoryItem, EquipmentItem, Order, Customer, StaffSchedule, AnalyticsSummary } from "./types"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -53,6 +53,18 @@ export async function fetchPendingOrders(): Promise<Order[]> {
 // ---- Customers ----
 export async function fetchCustomer(customerId: string): Promise<Customer> {
   return apiFetch<Customer>(`/customers/${customerId}`)
+}
+
+// ---- Staff Schedules ----
+export async function fetchStaffSchedules(day?: string): Promise<StaffSchedule[]> {
+  const path = day ? `/staff/schedules?day=${day}` : "/staff/schedules"
+  const data = await apiFetch<{ items: StaffSchedule[] }>(path)
+  return data.items
+}
+
+// ---- Analytics ----
+export async function fetchAnalyticsSummary(): Promise<AnalyticsSummary> {
+  return apiFetch<AnalyticsSummary>("/analytics/summary")
 }
 
 // ---- Crew (non-streaming) ----

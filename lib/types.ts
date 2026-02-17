@@ -6,6 +6,8 @@ export interface InventoryItem {
   quantity: number
   unit: string
   reorder_threshold: number
+  category?: string
+  location?: string
 }
 
 export interface EquipmentItem {
@@ -14,8 +16,11 @@ export interface EquipmentItem {
   equipment_name?: string
   health_score: number
   last_maintenance?: string
+  next_maintenance?: string
   location?: string
   type?: string
+  status?: string
+  maintenance_cost?: number
 }
 
 export interface Order {
@@ -24,6 +29,9 @@ export interface Order {
   quantity: number
   order_status: string
   created_at?: string
+  estimated_delivery?: string
+  driver?: string
+  route?: string
 }
 
 export interface Customer {
@@ -34,6 +42,35 @@ export interface Customer {
   loyalty_tier?: string
   preferences?: string[]
   total_purchases?: number
+  sentiment_score?: number
+}
+
+export interface StaffSchedule {
+  staff_id: string
+  staff_name?: string
+  schedule_day: string
+  shift_start?: string
+  shift_end?: string
+  role?: string
+  department?: string
+}
+
+export interface AnalyticsSummary {
+  inventory: {
+    total_items: number
+    total_units: number
+    low_stock_count: number
+  }
+  equipment: {
+    total: number
+    avg_health: number
+    critical_count: number
+  }
+  orders: {
+    total: number
+    pending: number
+    delivered: number
+  }
 }
 
 export interface WorkflowStatus {
@@ -70,3 +107,16 @@ export interface CrewResult {
 // ---- Shared UI types ----
 
 export type StatusVariant = "success" | "warning" | "danger" | "info" | "neutral"
+
+// ---- Work Order (virtual, derived from equipment) ----
+
+export interface WorkOrder {
+  id: string
+  equipment_id: string
+  equipment_name: string
+  priority: "critical" | "urgent" | "routine"
+  status: "open" | "in_progress" | "completed"
+  health_score: number
+  type?: string
+  location?: string
+}

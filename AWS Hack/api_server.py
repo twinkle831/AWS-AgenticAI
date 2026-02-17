@@ -295,6 +295,59 @@ def workflow_status(execution_arn: str):
     return get_workflow_status(execution_arn)
 
 
+# ---------- Staff schedule endpoints ----------
+
+@app.get("/staff/schedules")
+def staff_schedules(day: str | None = Query(default=None)):
+    """List staff schedule entries; optional filter by day."""
+    from aws.dynamodb import list_staff_schedules
+    return {"items": list_staff_schedules(day=day)}
+
+
+# ---------- Analytics / Stats ----------
+
+@app.get("/analytics/summary")
+def analytics_summary():
+    """Return a unified summary across all domains for the analytics dashboard."""
+    from aws.dynamodb import list_inventory, list_equipment, get_orders, list_low_stock
+    inventory = list_inventory()
+    equipment = list_equipment()
+    orders = get_orders()
+    low_stock = list_low_stock()
+
+    total_items = len(inventory)
+    total_units = sum(int(i.get("quantity", 0)) for i in inventory)
+    low_stock_count = len(low_stock)
+    avg_health = (
+        sum(float(e.get("health_score", 0)) for e in equipment) / len(equipment)
+        if equipment
+        else 0
+    )
+    total_orders = len(orders)
+    pending_orders = len([o for o in orders if o.get("order_status") == "pending"])
+    delivered_orders = len([o for o in orders if o.get("order_status") == "delivered"])
+    total_equipment = len(equipment)
+    critical_equipment = len([e for e in equipment if float(e.get("health_score", 1)) < 0.3])
+
+    return {
+        "inventory": {
+            "total_items": total_items,
+            "total_units": total_units,
+            "low_stock_count": low_stock_count,
+        },
+        "equipment": {
+            "total": total_equipment,
+            "avg_health": round(avg_health, 2),
+            "critical_count": critical_equipment,
+        },
+        "orders": {
+            "total": total_orders,
+            "pending": pending_orders,
+            "delivered": delivered_orders,
+        },
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
