@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: #0a0a0a;
+  --color-foreground: #e5e5e5;
+  --color-card: #141414;
+  --color-card-foreground: #e5e5e5;
+  --color-popover: #141414;
+  --color-popover-foreground: #e5e5e5;
+  --color-primary: #6d5cff;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #1e1e1e;
+  --color-secondary-foreground: #a3a3a3;
+  --color-muted: #1a1a1a;
+  --color-muted-foreground: #737373;
+  --color-accent: #1e1e1e;
+  --color-accent-foreground: #e5e5e5;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #262626;
+  --color-input: #262626;
+  --color-ring: #6d5cff;
+  --color-sidebar: #111111;
+  --color-sidebar-foreground: #a3a3a3;
+  --color-sidebar-active: #6d5cff;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+  --color-terminal: #0c0c0c;
+  --color-terminal-foreground: #d4d4d4;
+  --radius: 0.5rem;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+/* Terminal scrollbar styling */
+.terminal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.terminal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.terminal-scroll::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+.terminal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Agent color classes for terminal */
+.agent-inventory { color: #22c55e; }
+.agent-pricing { color: #3b82f6; }
+.agent-maintenance { color: #f59e0b; }
+.agent-customer { color: #a855f7; }
+.agent-logistics { color: #06b6d4; }
+.agent-system { color: #737373; }
