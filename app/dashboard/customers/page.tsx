@@ -77,6 +77,94 @@ export default function CustomersPage() {
         </div>
       </div>
 
+      {/* Live Query Feed & Escalation Queue */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Live Query Feed */}
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+            <h3 className="text-sm font-medium text-foreground">Live Query Feed</h3>
+          </div>
+          <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
+            {[
+              { time: "2m ago", query: "Where is my order #4892?", agent: "AI", status: "resolved", response: "Your order is in transit, expected delivery tomorrow by 5pm." },
+              { time: "5m ago", query: "Can I return the LED panel I bought?", agent: "AI", status: "resolved", response: "Yes! You have 14 days left on your return window. I can start the process." },
+              { time: "8m ago", query: "I was charged twice for subscription", agent: "Escalated", status: "pending", response: "Routing to billing team for review..." },
+              { time: "12m ago", query: "Do you have Widget Alpha in blue?", agent: "AI", status: "resolved", response: "Widget Alpha comes in Silver, Black, and Red. Silver is closest to blue tones." },
+              { time: "18m ago", query: "My loyalty points are wrong", agent: "AI", status: "resolved", response: "I see a discrepancy of 240 points. Corrected and applied to your account." },
+            ].map((q, i) => (
+              <div key={i} className={`rounded-md border px-3 py-2 ${q.status === "pending" ? "border-warning/30 bg-warning/5" : "border-border bg-secondary/30"}`}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground">{q.time}</span>
+                  <span className={`text-xs font-medium ${q.agent === "AI" ? "text-success" : "text-warning"}`}>{q.agent}</span>
+                </div>
+                <p className="text-sm text-foreground">{q.query}</p>
+                <p className="text-xs text-muted-foreground mt-1">{q.response}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Escalation Queue */}
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h3 className="mb-3 text-sm font-medium text-foreground">Escalation Queue</h3>
+          <div className="flex flex-col gap-2">
+            {[
+              { id: "ESC-042", customer: "Sarah M.", issue: "Double charge on subscription", priority: "High", time: "8 min" },
+              { id: "ESC-041", customer: "Tom R.", issue: "Product arrived damaged, wants replacement", priority: "Medium", time: "24 min" },
+              { id: "ESC-040", customer: "Linda K.", issue: "Account locked after password reset", priority: "High", time: "35 min" },
+            ].map((esc) => (
+              <div key={esc.id} className="flex items-center justify-between rounded-md border border-danger/20 bg-danger/5 px-3 py-2.5">
+                <div className="flex items-center gap-3">
+                  <div className={`h-2 w-2 rounded-full ${esc.priority === "High" ? "bg-danger animate-pulse" : "bg-warning"}`} />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono text-muted-foreground">{esc.id}</span>
+                      <span className="text-sm font-medium text-foreground">{esc.customer}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{esc.issue}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={`text-xs font-medium ${esc.priority === "High" ? "text-danger" : "text-warning"}`}>{esc.priority}</span>
+                  <p className="text-xs text-muted-foreground">Waiting {esc.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground text-center">3 queries awaiting human review</p>
+        </div>
+      </div>
+
+      {/* Customer Sentiment Tracker */}
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h3 className="mb-3 text-sm font-medium text-foreground">Customer Sentiment Tracker</h3>
+        <div className="flex items-end gap-3 h-28">
+          {[
+            { week: "W1", positive: 72, neutral: 18, negative: 10 },
+            { week: "W2", positive: 68, neutral: 20, negative: 12 },
+            { week: "W3", positive: 75, neutral: 16, negative: 9 },
+            { week: "W4", positive: 80, neutral: 14, negative: 6 },
+            { week: "W5", positive: 78, neutral: 15, negative: 7 },
+            { week: "W6", positive: 84, neutral: 11, negative: 5 },
+          ].map((w) => (
+            <div key={w.week} className="flex flex-1 flex-col items-center gap-1">
+              <div className="flex w-full flex-col items-center gap-0">
+                <div className="w-full rounded-t bg-success/70" style={{ height: `${w.positive}px` }} />
+                <div className="w-full bg-info/50" style={{ height: `${w.neutral}px` }} />
+                <div className="w-full rounded-b bg-danger/60" style={{ height: `${w.negative}px` }} />
+              </div>
+              <span className="text-xs text-muted-foreground">{w.week}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 flex items-center justify-center gap-6 text-xs">
+          <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-sm bg-success/70" /><span className="text-muted-foreground">Positive</span></div>
+          <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-sm bg-info/50" /><span className="text-muted-foreground">Neutral</span></div>
+          <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-sm bg-danger/60" /><span className="text-muted-foreground">Negative</span></div>
+        </div>
+      </div>
+
       {/* Customer Lookup */}
       <div className="rounded-lg border border-border bg-card p-4">
         <h2 className="mb-3 text-sm font-medium text-foreground">Customer Lookup</h2>

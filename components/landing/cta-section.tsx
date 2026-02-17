@@ -32,7 +32,7 @@ export function CTASection() {
           }`}
         >
           <Link
-            href="/"
+            href="/dashboard"
             className="group relative inline-flex items-center gap-2 rounded-lg bg-[#00f0b5] px-8 py-4 text-base font-bold text-[#060b12] transition-all hover:shadow-[0_0_40px_rgba(0,240,181,0.4)] hover:scale-[1.02]"
           >
             Get Started with Agentic Ops

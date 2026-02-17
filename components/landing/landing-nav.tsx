@@ -43,7 +43,7 @@ export function LandingNav() {
         </nav>
 
         <Link
-          href="/"
+          href="/dashboard"
           className="rounded-lg bg-[#00f0b5]/10 border border-[#00f0b5]/30 px-4 py-2 text-sm font-medium text-[#00f0b5] hover:bg-[#00f0b5]/20 transition-all"
         >
           Open Dashboard

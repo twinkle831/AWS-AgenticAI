@@ -178,7 +178,7 @@ export function HeroSection() {
             </p>
             <div className="mt-8 flex items-center gap-4">
               <Link
-                href="/"
+                href="/dashboard"
                 className="group relative inline-flex items-center gap-2 rounded-lg bg-[#00f0b5] px-6 py-3 text-sm font-semibold text-[#060b12] transition-all hover:shadow-[0_0_30px_rgba(0,240,181,0.3)]"
               >
                 Deploy Your Demo

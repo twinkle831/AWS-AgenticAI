@@ -122,6 +122,94 @@ export default function PricingPage() {
         </div>
       )}
 
+      {/* Competitor Price Tracker */}
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h3 className="mb-3 text-sm font-medium text-foreground">Competitor Price Tracker</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Product</th>
+                <th className="py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Our Price</th>
+                <th className="py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Competitor A</th>
+                <th className="py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Competitor B</th>
+                <th className="py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Position</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { name: "Widget Alpha", ours: 24.99, a: 26.50, b: 23.75 },
+                { name: "Sensor Module", ours: 89.00, a: 92.00, b: 95.00 },
+                { name: "Cable Kit", ours: 15.50, a: 14.99, b: 16.00 },
+                { name: "LED Panel", ours: 45.00, a: 44.50, b: 48.00 },
+              ].map((row) => {
+                const lowest = Math.min(row.ours, row.a, row.b)
+                const isLowest = row.ours === lowest
+                return (
+                  <tr key={row.name} className="border-b border-border last:border-0">
+                    <td className="py-2 text-foreground">{row.name}</td>
+                    <td className={`py-2 text-right font-mono ${isLowest ? "text-success font-medium" : "text-foreground"}`}>${row.ours.toFixed(2)}</td>
+                    <td className="py-2 text-right font-mono text-muted-foreground">${row.a.toFixed(2)}</td>
+                    <td className="py-2 text-right font-mono text-muted-foreground">${row.b.toFixed(2)}</td>
+                    <td className="py-2 text-right">
+                      <span className={`text-xs font-medium ${isLowest ? "text-success" : "text-warning"}`}>
+                        {isLowest ? "Lowest" : "Above"}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Price Rules & Revenue Impact */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Price Rule Builder */}
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h3 className="mb-3 text-sm font-medium text-foreground">Price Rule Builder</h3>
+          <div className="flex flex-col gap-3">
+            {[
+              { rule: "Price Floor", value: "$10.00", condition: "Never sell below cost + 20%", active: true },
+              { rule: "Price Ceiling", value: "$199.99", condition: "Cap on premium items", active: true },
+              { rule: "Demand Surge", value: "+15%", condition: "When stock < 20% threshold", active: true },
+              { rule: "Clearance Trigger", value: "-25%", condition: "When stock > 300% of target", active: false },
+            ].map((r) => (
+              <div key={r.rule} className={`flex items-center justify-between rounded-md border px-3 py-2 ${r.active ? "border-success/30 bg-success/5" : "border-border bg-secondary/30"}`}>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{r.rule}: <span className="font-mono text-primary">{r.value}</span></p>
+                  <p className="text-xs text-muted-foreground">{r.condition}</p>
+                </div>
+                <div className={`h-2 w-2 rounded-full ${r.active ? "bg-success" : "bg-muted-foreground/30"}`} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Revenue Impact Simulator */}
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h3 className="mb-3 text-sm font-medium text-foreground">Revenue Impact Simulator</h3>
+          <div className="flex flex-col gap-4">
+            <div className="rounded-md bg-secondary/50 p-3">
+              <p className="text-xs text-muted-foreground mb-1">If all LOW stock prices raised +10%</p>
+              <p className="text-lg font-bold text-success font-mono">+$2,340</p>
+              <p className="text-xs text-muted-foreground">Projected additional monthly revenue</p>
+            </div>
+            <div className="rounded-md bg-secondary/50 p-3">
+              <p className="text-xs text-muted-foreground mb-1">If all HIGH stock items discounted -15%</p>
+              <p className="text-lg font-bold text-info font-mono">+$5,120</p>
+              <p className="text-xs text-muted-foreground">Projected revenue from increased volume</p>
+            </div>
+            <div className="rounded-md bg-secondary/50 p-3">
+              <p className="text-xs text-muted-foreground mb-1">Net projected impact</p>
+              <p className="text-lg font-bold text-primary font-mono">+$7,460</p>
+              <p className="text-xs text-muted-foreground">Combined revenue optimization</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Pricing Table */}
       <div>
         <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wider">

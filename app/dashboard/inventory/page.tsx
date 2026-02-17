@@ -23,6 +23,41 @@ function getStockLabel(item: InventoryItem): string {
   return "Healthy"
 }
 
+const FORECAST_DATA = [
+  { day: "Mon", current: 340, forecast: 380 },
+  { day: "Tue", current: 310, forecast: 360 },
+  { day: "Wed", current: 290, forecast: 420 },
+  { day: "Thu", current: 0, forecast: 390 },
+  { day: "Fri", current: 0, forecast: 450 },
+  { day: "Sat", current: 0, forecast: 520 },
+  { day: "Sun", current: 0, forecast: 480 },
+]
+
+function DemandForecastChart() {
+  const maxVal = Math.max(...FORECAST_DATA.map((d) => Math.max(d.current, d.forecast)))
+  return (
+    <div className="flex items-end gap-3 h-36">
+      {FORECAST_DATA.map((d) => (
+        <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
+          <div className="flex items-end gap-0.5 w-full justify-center h-28">
+            {d.current > 0 && (
+              <div
+                className="w-3 rounded-t bg-success/80"
+                style={{ height: `${(d.current / maxVal) * 100}%`, minHeight: "4px" }}
+              />
+            )}
+            <div
+              className="w-3 rounded-t border border-dashed border-info/60 bg-info/20"
+              style={{ height: `${(d.forecast / maxVal) * 100}%`, minHeight: "4px" }}
+            />
+          </div>
+          <span className="text-xs text-muted-foreground">{d.day}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function InventoryPage() {
   const [search, setSearch] = useState("")
   const [filterStatus, setFilterStatus] = useState<"all" | "low" | "healthy">("all")
@@ -104,6 +139,12 @@ export default function InventoryPage() {
         />
         <KPICard label="Pending Orders" value={orders?.filter((o) => o.order_status === "pending").length || 0} variant="warning" />
         <KPICard label="Delivered" value={orders?.filter((o) => o.order_status === "delivered").length || 0} variant="success" />
+      </div>
+
+      {/* Demand Forecast Chart */}
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h2 className="mb-4 text-sm font-medium text-foreground">Demand Forecast (Next 7 Days)</h2>
+        <DemandForecastChart />
       </div>
 
       {/* Filters */}
