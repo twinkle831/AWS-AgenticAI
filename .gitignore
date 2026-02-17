@@ -1,0 +1,106 @@
+# ================================
+# DEPENDENCIES
+# ================================
+node_modules/
+.pnp
+.pnp.js
+
+# ================================
+# NEXT.JS
+# ================================
+.next/
+out/
+build/
+dist/
+
+# ================================
+# ENV FILES (NEVER COMMIT SECRETS)
+# ================================
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# ================================
+# PNPM
+# ================================
+.pnpm-store/
+.pnpm-debug.log
+
+# ================================
+# LOGS
+# ================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ================================
+# OS FILES
+# ================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ================================
+# IDE / EDITORS
+# ================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.fleet/
+.cursor/
+
+# ================================
+# TYPESCRIPT
+# ================================
+*.tsbuildinfo
+next-env.d.ts
+
+# ================================
+# TESTING
+# ================================
+coverage/
+.nyc_output/
+cypress/videos/
+cypress/screenshots/
+playwright-report/
+test-results/
+
+# ================================
+# CACHE
+# ================================
+.cache/
+.turbo/
+.vercel/
+.eslintcache
+.stylelintcache
+
+# ================================
+# AWS
+# ================================
+.aws/
+*.pem
+*.key
+
+# ================================
+# MISC
+# ================================
+*.tgz
+*.zip
+*.tar.gz
