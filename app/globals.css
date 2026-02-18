@@ -75,3 +75,93 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ===== Neural Commander Animations ===== */
+
+/* Pulse animation for glowing elements */
+@keyframes commanderPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.15); }
+}
+
+.commander-pulse {
+  animation: commanderPulse 2s ease-in-out infinite;
+}
+
+/* Ripple effect for speaking agents */
+@keyframes commanderRipple {
+  0% { transform: scale(1); opacity: 0.6; border-width: 2px; }
+  100% { transform: scale(2.2); opacity: 0; border-width: 1px; }
+}
+
+.commander-ripple {
+  border: 2px solid;
+  animation: commanderRipple 1.5s ease-out infinite;
+}
+
+.commander-ripple-delayed {
+  border: 2px solid;
+  animation: commanderRipple 1.5s ease-out infinite 0.5s;
+}
+
+/* Spin animation for thinking state */
+@keyframes commanderSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.commander-spin {
+  animation: commanderSpin 3s linear infinite;
+}
+
+/* Data stream flowing along debate lines */
+@keyframes commanderDataStream {
+  0% { stroke-dashoffset: 24; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.commander-data-stream {
+  stroke-dasharray: 8 4;
+  animation: commanderDataStream 0.8s linear infinite;
+}
+
+/* Scanline overlay effect */
+@keyframes commanderScanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.commander-scanline {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(109, 92, 255, 0.08) 50%,
+    transparent 100%
+  );
+  animation: commanderScanline 8s linear infinite;
+}
+
+/* Message glow for currently speaking */
+@keyframes commanderMessageGlow {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: -2px 0 8px rgba(109, 92, 255, 0.1); }
+}
+
+.commander-message-glow {
+  animation: commanderMessageGlow 2s ease-in-out infinite;
+}
+
+/* Commander scrollbar */
+.commander-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.commander-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.commander-scroll::-webkit-scrollbar-thumb {
+  background: rgba(109, 92, 255, 0.2);
+  border-radius: 2px;
+}
+.commander-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(109, 92, 255, 0.4);
+}
