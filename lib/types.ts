@@ -70,3 +70,28 @@ export interface CrewResult {
 // ---- Shared UI types ----
 
 export type StatusVariant = "success" | "warning" | "danger" | "info" | "neutral"
+
+// ---- Shelf Share Monitor types ----
+
+export interface BrandOccupancy {
+  brand_name: string
+  percentage: number
+  color: string
+}
+
+export interface ShelfIssue {
+  type: "empty_spot" | "misplaced_product" | "damaged_item"
+  severity: "low" | "medium" | "high"
+  location: string
+  description: string
+}
+
+export interface ShelfAnalysis {
+  analysis_id: string
+  shelf_location: string
+  image_url: string
+  analyzed_at: string
+  shelf_health_score: number
+  brands: BrandOccupancy[]
+  issues: ShelfIssue[]
+}
