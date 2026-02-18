@@ -65,21 +65,36 @@ export function useVoice() {
       if (final) {
         transcriptRef.current = final
       }
-      interimRef.current = interim
+      // Always keep the best available text in interimRef
+      interimRef.current = final || interim
       setState((s) => ({
         ...s,
         transcript: final || s.transcript,
         interimTranscript: interim,
       }))
+
+      // If we got a final result and there's a pending callback, fire immediately
+      if (final && onFinalTranscriptRef.current) {
+        console.log("[v0] onresult: got final, firing callback with:", final)
+        const cb = onFinalTranscriptRef.current
+        onFinalTranscriptRef.current = null
+        cb(final.trim())
+      }
     }
 
     recognition.onend = () => {
       setState((s) => ({ ...s, isListening: false }))
-      // When recognition ends, fire the callback with whatever we got
-      const finalText = transcriptRef.current || interimRef.current
-      if (finalText.trim() && onFinalTranscriptRef.current) {
-        onFinalTranscriptRef.current(finalText.trim())
-        onFinalTranscriptRef.current = null
+      // Fire callback with whatever text we captured if not already fired
+      if (onFinalTranscriptRef.current) {
+        const text = transcriptRef.current || interimRef.current
+        console.log("[v0] onend: firing callback with:", text)
+        if (text.trim()) {
+          const cb = onFinalTranscriptRef.current
+          onFinalTranscriptRef.current = null
+          cb(text.trim())
+        } else {
+          onFinalTranscriptRef.current = null
+        }
       }
     }
 
@@ -98,8 +113,25 @@ export function useVoice() {
     if (onComplete) {
       onFinalTranscriptRef.current = onComplete
     }
+
+    // Capture text we already have before stopping
+    const capturedText = transcriptRef.current || interimRef.current
+    console.log("[v0] stopListening: captured text =", capturedText)
+
     recognitionRef.current?.stop()
     setState((s) => ({ ...s, isListening: false }))
+
+    // Safety net: if onend/onresult didn't fire the callback within 500ms, fire it
+    if (onComplete && capturedText.trim()) {
+      setTimeout(() => {
+        if (onFinalTranscriptRef.current) {
+          console.log("[v0] stopListening safety net: firing callback with:", capturedText)
+          const cb = onFinalTranscriptRef.current
+          onFinalTranscriptRef.current = null
+          cb(capturedText.trim())
+        }
+      }, 500)
+    }
   }, [])
 
   const processQueue = useCallback(() => {
