@@ -188,11 +188,11 @@ export function useCommander() {
   }, [voice])
 
   const stopVoiceCommand = useCallback(() => {
-    voice.stopListening()
-    const transcript = voice.transcript || voice.interimTranscript
-    if (transcript.trim()) {
-      handleCommand(transcript.trim())
-    }
+    voice.stopListening((transcript: string) => {
+      if (transcript.trim()) {
+        handleCommand(transcript.trim())
+      }
+    })
   }, [voice, handleCommand])
 
   const clearHistory = useCallback(() => {

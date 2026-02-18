@@ -29,6 +29,9 @@ export function useVoice() {
   const speechQueueRef = useRef<{ text: string; agentId: AgentId }[]>([])
   const isSpeakingRef = useRef(false)
   const isMutedRef = useRef(false)
+  const transcriptRef = useRef("")
+  const interimRef = useRef("")
+  const onFinalTranscriptRef = useRef<((text: string) => void) | null>(null)
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -59,6 +62,10 @@ export function useVoice() {
           interim += transcript
         }
       }
+      if (final) {
+        transcriptRef.current = final
+      }
+      interimRef.current = interim
       setState((s) => ({
         ...s,
         transcript: final || s.transcript,
@@ -68,6 +75,12 @@ export function useVoice() {
 
     recognition.onend = () => {
       setState((s) => ({ ...s, isListening: false }))
+      // When recognition ends, fire the callback with whatever we got
+      const finalText = transcriptRef.current || interimRef.current
+      if (finalText.trim() && onFinalTranscriptRef.current) {
+        onFinalTranscriptRef.current(finalText.trim())
+        onFinalTranscriptRef.current = null
+      }
     }
 
     recognition.onerror = () => {
@@ -76,10 +89,15 @@ export function useVoice() {
 
     recognitionRef.current = recognition
     recognition.start()
+    transcriptRef.current = ""
+    interimRef.current = ""
     setState((s) => ({ ...s, isListening: true, transcript: "", interimTranscript: "" }))
   }, [])
 
-  const stopListening = useCallback(() => {
+  const stopListening = useCallback((onComplete?: (transcript: string) => void) => {
+    if (onComplete) {
+      onFinalTranscriptRef.current = onComplete
+    }
     recognitionRef.current?.stop()
     setState((s) => ({ ...s, isListening: false }))
   }, [])
