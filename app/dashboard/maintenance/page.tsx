@@ -64,6 +64,89 @@ export default function MaintenancePage() {
         </div>
       )}
 
+      {/* Work Order Board (Kanban) */}
+      <div>
+        <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wider">Work Order Board</h2>
+        <div className="grid grid-cols-3 gap-4">
+          {[
+            {
+              status: "Open",
+              color: "border-warning/30",
+              headerBg: "bg-warning/10 text-warning",
+              items: [
+                { id: "WO-101", equipment: "HVAC Unit #3", desc: "Compressor overheating intermittently", priority: "High" },
+                { id: "WO-104", equipment: "Conveyor Belt A", desc: "Belt tension adjustment needed", priority: "Medium" },
+              ],
+            },
+            {
+              status: "In Progress",
+              color: "border-info/30",
+              headerBg: "bg-info/10 text-info",
+              items: [
+                { id: "WO-098", equipment: "Freezer Unit #1", desc: "Thermostat calibration in progress", priority: "High" },
+              ],
+            },
+            {
+              status: "Completed",
+              color: "border-success/30",
+              headerBg: "bg-success/10 text-success",
+              items: [
+                { id: "WO-095", equipment: "Generator #2", desc: "Oil change and filter replacement", priority: "Low" },
+                { id: "WO-092", equipment: "Lighting Zone B", desc: "Ballast replacement completed", priority: "Medium" },
+                { id: "WO-090", equipment: "POS Terminal #4", desc: "Screen replacement done", priority: "Low" },
+              ],
+            },
+          ].map((col) => (
+            <div key={col.status} className={`rounded-lg border ${col.color} bg-card`}>
+              <div className={`flex items-center justify-between rounded-t-lg px-4 py-2.5 ${col.headerBg}`}>
+                <span className="text-xs font-semibold uppercase tracking-wider">{col.status}</span>
+                <span className="text-xs font-mono">{col.items.length}</span>
+              </div>
+              <div className="flex flex-col gap-2 p-3">
+                {col.items.map((wo) => (
+                  <div key={wo.id} className="rounded-md border border-border bg-secondary/50 p-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-mono text-muted-foreground">{wo.id}</span>
+                      <span className={`text-xs font-medium ${wo.priority === "High" ? "text-danger" : wo.priority === "Medium" ? "text-warning" : "text-muted-foreground"}`}>
+                        {wo.priority}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium text-foreground">{wo.equipment}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{wo.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Maintenance History Log */}
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h3 className="mb-3 text-sm font-medium text-foreground">Maintenance History Log</h3>
+        <div className="flex flex-col gap-1">
+          {[
+            { date: "2026-02-14", equipment: "Generator #2", action: "Oil change + filter", cost: "$180", tech: "M. Rodriguez" },
+            { date: "2026-02-11", equipment: "Lighting Zone B", action: "Ballast replacement", cost: "$95", tech: "J. Chen" },
+            { date: "2026-02-08", equipment: "POS Terminal #4", action: "Screen replacement", cost: "$320", tech: "A. Kumar" },
+            { date: "2026-02-03", equipment: "HVAC Unit #1", action: "Refrigerant recharge", cost: "$250", tech: "M. Rodriguez" },
+            { date: "2026-01-28", equipment: "Conveyor Belt B", action: "Motor bearing replacement", cost: "$475", tech: "J. Chen" },
+          ].map((entry, i) => (
+            <div key={i} className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-secondary/50 transition-colors">
+              <div className="flex items-center gap-4">
+                <span className="text-xs font-mono text-muted-foreground w-20">{entry.date}</span>
+                <span className="text-sm text-foreground">{entry.equipment}</span>
+                <span className="text-xs text-muted-foreground">{entry.action}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground">{entry.tech}</span>
+                <span className="text-sm font-mono font-medium text-foreground">{entry.cost}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Equipment Health List */}
       <div>
         <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wider">
