@@ -8,6 +8,7 @@ import { ShelfAnalysisResults } from "@/components/shelf-share/shelf-analysis-re
 import { AnalysisHistory } from "@/components/shelf-share/analysis-history"
 import type { ShelfAnalysis } from "@/lib/types"
 
+// Shelf Share Monitor - AI-powered shelf space analysis with AWS integration
 export default function ShelfSharePage() {
   const [currentAnalysis, setCurrentAnalysis] = useState<ShelfAnalysis | null>(null)
   const [allAnalyses, setAllAnalyses] = useState<ShelfAnalysis[]>([])
