@@ -24,16 +24,22 @@ export default function ShelfSharePage() {
     try {
       const response = await fetch("/api/shelf-share/history?limit=50")
       if (!response.ok) {
-        console.error("[v0] Failed to load history:", response.status)
+        console.log("[v0] Failed to load history:", response.status)
         return
       }
       const data = await response.json()
-      if (data.success && data.data) {
-        // The response contains the data, parse it properly
-        setAllAnalyses(data.data || [])
+      if (data.success) {
+        // Ensure data.data is always an array
+        const historyData = Array.isArray(data.data) ? data.data : []
+        console.log("[v0] Loaded", historyData.length, "analyses from history")
+        setAllAnalyses(historyData)
+      } else {
+        console.log("[v0] API returned unsuccessful response, using empty array")
+        setAllAnalyses([])
       }
     } catch (err) {
-      console.error("[v0] Error loading history:", err)
+      console.log("[v0] Error loading history:", err)
+      setAllAnalyses([])
     }
   }
 
