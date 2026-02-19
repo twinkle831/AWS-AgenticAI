@@ -1,3 +1,5 @@
+"use client"
+
 import { DataTable } from "@/components/data-table"
 import { StatusBadge } from "@/components/status-badge"
 import type { ShelfAnalysis, StatusVariant } from "@/lib/types"
@@ -14,18 +16,32 @@ export function AnalysisHistory({ analyses }: AnalysisHistoryProps) {
     return "danger"
   }
 
+  // Format date consistently without locale-specific formatting
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const day = String(date.getDate()).padStart(2, "0")
+    const hours = String(date.getHours()).padStart(2, "0")
+    const minutes = String(date.getMinutes()).padStart(2, "0")
+    return { date: `${year}-${month}-${day}`, time: `${hours}:${minutes}` }
+  }
+
   const columns = [
     {
       key: "analyzed_at",
       label: "Date & Time",
-      render: (analysis: ShelfAnalysis) => (
-        <span className="text-sm">
-          {new Date(analysis.analyzed_at).toLocaleDateString()}{" "}
-          <span className="text-muted-foreground text-xs">
-            {new Date(analysis.analyzed_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+      render: (analysis: ShelfAnalysis) => {
+        const { date, time } = formatDate(analysis.analyzed_at)
+        return (
+          <span className="text-sm">
+            {date}{" "}
+            <span className="text-muted-foreground text-xs">
+              {time}
+            </span>
           </span>
-        </span>
-      ),
+        )
+      },
     },
     {
       key: "shelf_location",
