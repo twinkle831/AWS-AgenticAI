@@ -36,7 +36,7 @@ export function AnalysisHistory({ analyses }: AnalysisHistoryProps) {
         return (
           <span className="text-sm">
             {date}{" "}
-            <span className="text-muted-foreground text-xs">
+            <span className="text-muted-foreground text-xs" suppressHydrationWarning>
               {time}
             </span>
           </span>
