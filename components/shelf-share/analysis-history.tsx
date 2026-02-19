@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { DataTable } from "@/components/data-table"
 import { StatusBadge } from "@/components/status-badge"
 import type { ShelfAnalysis, StatusVariant } from "@/lib/types"
@@ -10,11 +9,6 @@ interface AnalysisHistoryProps {
 }
 
 export function AnalysisHistory({ analyses }: AnalysisHistoryProps) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const getHealthVariant = (score: number): StatusVariant => {
     if (score >= 80) return "success"
@@ -37,17 +31,10 @@ export function AnalysisHistory({ analyses }: AnalysisHistoryProps) {
   const columns = [
     {
       key: "analyzed_at",
-      label: "Date & Time",
+      label: "Analyzed",
       render: (analysis: ShelfAnalysis) => {
-        const { date, time } = formatDate(analysis.analyzed_at)
-        return (
-          <span className="text-sm">
-            {date}{" "}
-            <span className="text-muted-foreground text-xs">
-              {mounted ? time : ""}
-            </span>
-          </span>
-        )
+        const { date } = formatDate(analysis.analyzed_at)
+        return <span className="text-sm">{date}</span>
       },
     },
     {
