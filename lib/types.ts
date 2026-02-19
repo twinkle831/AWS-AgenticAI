@@ -86,6 +86,13 @@ export interface ShelfIssue {
   description: string
 }
 
+export interface BrandContractCompliance {
+  brand: string
+  required_percentage: number
+  actual_percentage: number
+  status: "compliant" | "below_target" | "exceeds_target"
+}
+
 export interface ShelfAnalysis {
   analysis_id: string
   shelf_location: string
@@ -94,4 +101,20 @@ export interface ShelfAnalysis {
   shelf_health_score: number
   brands: BrandOccupancy[]
   issues: ShelfIssue[]
+  insights?: string
+  contractCompliance?: BrandContractCompliance[]
+  processingTime?: number
+}
+
+export interface ShelfAnalysisRequest {
+  image: string // Base64 or File
+  shelfLocation: string
+  storeId?: string
+}
+
+export interface ShelfAnalysisResponse {
+  success: boolean
+  data?: ShelfAnalysis
+  error?: string
+  message?: string
 }

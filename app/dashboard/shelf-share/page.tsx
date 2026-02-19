@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import useSWR from "swr"
+import { useState, useEffect } from "react"
 import { PageHeader } from "@/components/page-header"
 import { KPICard } from "@/components/kpi-card"
 import { ImageUploadZone } from "@/components/shelf-share/image-upload-zone"
@@ -9,80 +8,87 @@ import { ShelfAnalysisResults } from "@/components/shelf-share/shelf-analysis-re
 import { AnalysisHistory } from "@/components/shelf-share/analysis-history"
 import type { ShelfAnalysis } from "@/lib/types"
 
-// Mock data generator for demonstration
-function generateMockAnalysis(fileName: string, shelfLocation: string, index: number): ShelfAnalysis {
-  const brandColors: Record<string, string> = {
-    "Coca-Cola": "#EF3B36",
-    Pepsi: "#004687",
-    "Dr Pepper": "#A8142F",
-    Sprite: "#90EE90",
-    Fanta: "#FF6B35",
-    Dasani: "#1F77B4",
-    Minute_Maid: "#FF8C00",
-    Other: "#888888",
-  }
-
-  const brands = [
-    { name: "Coca-Cola", percentage: 38 },
-    { name: "Pepsi", percentage: 31 },
-    { name: "Dr Pepper", percentage: 18 },
-    { name: "Sprite", percentage: 8 },
-    { name: "Other", percentage: 5 },
-  ]
-
-  const issues = [
-    {
-      type: "empty_spot" as const,
-      severity: "medium" as const,
-      location: "Shelf Right Side",
-      description: "Empty shelf space detected on the right side",
-    },
-    {
-      type: "misplaced_product" as const,
-      severity: "low" as const,
-      location: "Center Section",
-      description: "Sprite product found in Coca-Cola section",
-    },
-  ]
-
-  // Generate stable date based on index for consistent hydration
-  const dateOffset = index * 60 * 60 * 1000 // 1 hour offset per index
-  const analyzedDate = new Date(Date.now() - dateOffset)
-
-  return {
-    analysis_id: `analysis-${shelfLocation.replace(/\s+/g, "-")}-${index}`,
-    shelf_location: shelfLocation,
-    image_url: "data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
-    analyzed_at: analyzedDate.toISOString(),
-    shelf_health_score: 74,
-    brands: brands.map((b) => ({
-      brand_name: b.name,
-      percentage: b.percentage,
-      color: brandColors[b.name] || brandColors["Other"],
-    })),
-    issues,
-  }
-}
-
 export default function ShelfSharePage() {
   const [currentAnalysis, setCurrentAnalysis] = useState<ShelfAnalysis | null>(null)
-  const [allAnalyses, setAllAnalyses] = useState<ShelfAnalysis[]>([
-    generateMockAnalysis("sample1.jpg", "Beverage Aisle - Section A", 0),
-    generateMockAnalysis("sample2.jpg", "Beverage Aisle - Section B", 1),
-    generateMockAnalysis("sample3.jpg", "Water Coolers - Display", 2),
-  ])
+  const [allAnalyses, setAllAnalyses] = useState<ShelfAnalysis[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [selectedLocation, setSelectedLocation] = useState("Beverage Aisle")
+
+  // Load analysis history on mount
+  useEffect(() => {
+    loadAnalysisHistory()
+  }, [])
+
+  const loadAnalysisHistory = async () => {
+    try {
+      const response = await fetch("/api/shelf-share/history?limit=50")
+      if (!response.ok) {
+        console.error("[v0] Failed to load history:", response.status)
+        return
+      }
+      const data = await response.json()
+      if (data.success && data.data) {
+        // The response contains the data, parse it properly
+        setAllAnalyses(data.data || [])
+      }
+    } catch (err) {
+      console.error("[v0] Error loading history:", err)
+    }
+  }
 
   const handleImageSelect = async (file: File) => {
     setIsLoading(true)
-    // Simulate API call delay
-    setTimeout(() => {
-      const newAnalysis = generateMockAnalysis(file.name, selectedLocation, allAnalyses.length)
-      setCurrentAnalysis(newAnalysis)
-      setAllAnalyses([newAnalysis, ...allAnalyses])
+    setError(null)
+
+    try {
+      // Convert file to base64
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const base64Image = (e.target?.result as string).split(",")[1] // Remove data:image/jpeg;base64, prefix
+
+        try {
+          console.log("[v0] Sending image to API for analysis...")
+          const response = await fetch("/api/shelf-share/analyze", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              image: base64Image,
+              shelfLocation: selectedLocation,
+              storeId: "default",
+            }),
+          })
+
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || `Analysis failed with status ${response.status}`)
+          }
+
+          const result = await response.json()
+          if (result.success && result.data) {
+            console.log("[v0] Analysis complete:", result.data)
+            setCurrentAnalysis(result.data)
+            setAllAnalyses([result.data, ...allAnalyses])
+          } else {
+            throw new Error(result.error || "Unknown error occurred")
+          }
+        } catch (err) {
+          const errorMessage = err instanceof Error ? err.message : "Failed to analyze image"
+          console.error("[v0] API Error:", errorMessage)
+          setError(errorMessage)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+      reader.readAsDataURL(file)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to process file"
+      console.error("[v0] Error:", errorMessage)
+      setError(errorMessage)
       setIsLoading(false)
-    }, 2000)
+    }
   }
 
   const stats = {
@@ -131,7 +137,32 @@ export default function ShelfSharePage() {
           </div>
         </div>
 
-        {/* Image Upload Zone */}
+        {/* Error Message */}
+        {error && (
+          <div className="rounded-lg border border-danger/30 bg-danger/10 p-4">
+            <div className="flex gap-3">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="text-danger flex-shrink-0 mt-0.5"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-foreground">Analysis Error</p>
+                <p className="text-xs text-muted-foreground mt-1">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+      {/* Image Upload Zone */}
         <ImageUploadZone onImageSelect={handleImageSelect} isLoading={isLoading} />
       </div>
 
