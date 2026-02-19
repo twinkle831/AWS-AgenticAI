@@ -70,7 +70,8 @@ export default function ShelfSharePage() {
           if (result.success && result.data) {
             console.log("[v0] Analysis complete:", result.data)
             setCurrentAnalysis(result.data)
-            setAllAnalyses([result.data, ...allAnalyses])
+            const currentData = Array.isArray(allAnalyses) ? allAnalyses : []
+            setAllAnalyses([result.data, ...currentData])
           } else {
             throw new Error(result.error || "Unknown error occurred")
           }
@@ -91,11 +92,12 @@ export default function ShelfSharePage() {
     }
   }
 
+  const analyses = Array.isArray(allAnalyses) ? allAnalyses : []
   const stats = {
-    totalAnalyses: allAnalyses.length,
-    avgHealthScore: Math.round(allAnalyses.reduce((sum, a) => sum + a.shelf_health_score, 0) / allAnalyses.length),
-    totalIssuesDetected: allAnalyses.reduce((sum, a) => sum + a.issues.length, 0),
-    shelvesMonitored: new Set(allAnalyses.map((a) => a.shelf_location)).size,
+    totalAnalyses: analyses.length,
+    avgHealthScore: analyses.length > 0 ? Math.round(analyses.reduce((sum, a) => sum + a.shelf_health_score, 0) / analyses.length) : 0,
+    totalIssuesDetected: analyses.reduce((sum, a) => sum + (a.issues?.length || 0), 0),
+    shelvesMonitored: new Set(analyses.map((a) => a.shelf_location)).size,
   }
 
   return (
@@ -174,7 +176,7 @@ export default function ShelfSharePage() {
       )}
 
       {/* Historical Data */}
-      <AnalysisHistory analyses={allAnalyses} />
+      <AnalysisHistory analyses={analyses} />
 
       {/* AI Insights Info Box */}
       {!currentAnalysis && (
