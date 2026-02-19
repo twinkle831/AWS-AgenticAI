@@ -10,7 +10,7 @@ import { AnalysisHistory } from "@/components/shelf-share/analysis-history"
 import type { ShelfAnalysis } from "@/lib/types"
 
 // Mock data generator for demonstration
-function generateMockAnalysis(fileName: string, shelfLocation: string): ShelfAnalysis {
+function generateMockAnalysis(fileName: string, shelfLocation: string, index: number): ShelfAnalysis {
   const brandColors: Record<string, string> = {
     "Coca-Cola": "#EF3B36",
     Pepsi: "#004687",
@@ -45,11 +45,15 @@ function generateMockAnalysis(fileName: string, shelfLocation: string): ShelfAna
     },
   ]
 
+  // Generate stable date based on index for consistent hydration
+  const dateOffset = index * 60 * 60 * 1000 // 1 hour offset per index
+  const analyzedDate = new Date(Date.now() - dateOffset)
+
   return {
-    analysis_id: `analysis-${Date.now()}`,
+    analysis_id: `analysis-${shelfLocation.replace(/\s+/g, "-")}-${index}`,
     shelf_location: shelfLocation,
     image_url: "data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
-    analyzed_at: new Date().toISOString(),
+    analyzed_at: analyzedDate.toISOString(),
     shelf_health_score: 74,
     brands: brands.map((b) => ({
       brand_name: b.name,
@@ -63,9 +67,9 @@ function generateMockAnalysis(fileName: string, shelfLocation: string): ShelfAna
 export default function ShelfSharePage() {
   const [currentAnalysis, setCurrentAnalysis] = useState<ShelfAnalysis | null>(null)
   const [allAnalyses, setAllAnalyses] = useState<ShelfAnalysis[]>([
-    generateMockAnalysis("sample1.jpg", "Beverage Aisle - Section A"),
-    generateMockAnalysis("sample2.jpg", "Beverage Aisle - Section B"),
-    generateMockAnalysis("sample3.jpg", "Water Coolers - Display"),
+    generateMockAnalysis("sample1.jpg", "Beverage Aisle - Section A", 0),
+    generateMockAnalysis("sample2.jpg", "Beverage Aisle - Section B", 1),
+    generateMockAnalysis("sample3.jpg", "Water Coolers - Display", 2),
   ])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedLocation, setSelectedLocation] = useState("Beverage Aisle")
@@ -74,7 +78,7 @@ export default function ShelfSharePage() {
     setIsLoading(true)
     // Simulate API call delay
     setTimeout(() => {
-      const newAnalysis = generateMockAnalysis(file.name, selectedLocation)
+      const newAnalysis = generateMockAnalysis(file.name, selectedLocation, allAnalyses.length)
       setCurrentAnalysis(newAnalysis)
       setAllAnalyses([newAnalysis, ...allAnalyses])
       setIsLoading(false)
