@@ -43,11 +43,9 @@ export function AnalysisHistory({ analyses }: AnalysisHistoryProps) {
         return (
           <span className="text-sm">
             {date}{" "}
-            {mounted && (
-              <span className="text-muted-foreground text-xs">
-                {time}
-              </span>
-            )}
+            <span className="text-muted-foreground text-xs">
+              {mounted ? time : ""}
+            </span>
           </span>
         )
       },
